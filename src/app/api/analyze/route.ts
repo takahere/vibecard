@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { nanoid } from 'nanoid'
-import { generateVibe } from '@/lib/claude'
+import { generateVibe } from '@/lib/ai'
 import { saveResult } from '@/lib/result-store'
 import type { AnalyzeApiResponse, VibeResult } from '@/lib/types'
 

@@ -1,6 +1,6 @@
-import Anthropic from '@anthropic-ai/sdk'
+import { GoogleGenerativeAI } from '@google/generative-ai'
 
-const client = new Anthropic()
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY ?? '')
 
 interface VibeGeneration {
   readonly typeName: string
@@ -35,19 +35,19 @@ export async function generateVibe(answers: readonly string[]): Promise<VibeGene
 
 この回答パターンから、ユニークで魅力的な性格タイプを1つ生成してください。`
 
-  const message = await client.messages.create({
-    model: 'claude-haiku-4-5-20251001',
-    max_tokens: 500,
-    system: SYSTEM_PROMPT,
-    messages: [{ role: 'user', content: userPrompt }],
+  const model = genAI.getGenerativeModel({
+    model: 'gemini-2.0-flash',
+    systemInstruction: SYSTEM_PROMPT,
   })
 
-  const textBlock = message.content.find((block) => block.type === 'text')
-  if (!textBlock || textBlock.type !== 'text') {
-    throw new Error('No text response from Claude')
+  const result = await model.generateContent(userPrompt)
+  const text = result.response.text()
+
+  if (!text) {
+    throw new Error('No text response from Gemini')
   }
 
-  const parsed = JSON.parse(textBlock.text) as {
+  const parsed = JSON.parse(text) as {
     typeName: string
     catchCopy: string
     traits: [string, string, string]
